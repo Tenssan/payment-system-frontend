@@ -2,6 +2,8 @@
 import React, { useEffect,useState } from 'react';
 import './PerfilStyle.css'; // Importa los estilos
 import Image from 'next/image';
+import ImgProfile from './assetsProfile/profile.jpg'
+
 const Perfil: React.FC = () => {
     
     
@@ -11,7 +13,7 @@ const Perfil: React.FC = () => {
                 <div className="profile">
                     <div className="profile-image">
                         <Image
-                            src="/components/assetsProfile/profile.jpg"
+                            src={ImgProfile}
                             alt="Profile"
                             width={150}
                             height={150}
