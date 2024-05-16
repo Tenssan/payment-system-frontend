@@ -1,0 +1,16 @@
+.container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .left-panel {
+    margin-right: 20px; /* Ajusta el margen entre Perfil y Card */
+  }
+  
+  .right-panel {
+    margin-bottom: 20px; /* Ajusta el margen entre Card y Landing */
+  }
+  
+  .bottom-panel {
+    margin-top: auto; /* Coloca Landing al final del contenedor */
+  }
