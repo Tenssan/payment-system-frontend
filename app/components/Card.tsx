@@ -2,8 +2,13 @@
 import React, { useEffect,useState } from 'react';
 import './CardStyle.css'; // Importa los estilos
 import Image from 'next/image';
+import useFetchUser from './useFetchUser';
 const Card: React.FC = () => {
-    
+    const { user, loading, error, fetchUser } = useFetchUser();
+    useEffect(() => {
+        // Llama a la función para obtener los datos del usuario
+        fetchUser(1); // Aquí puedes pasar el ID del usuario que desees mostrar
+    }, []);
     
     return (
         <div className="card">
@@ -37,7 +42,7 @@ const Card: React.FC = () => {
                 </div>
 
                 <div className="card-info__bottom">
-                    <div className="card-holder">David Mraz</div>
+                    <div className="card-holder">{`${user?.firstname} ${user?.lastname}`}</div>
                     <div className="card-info__right">
                         <div className="exp-date">05/27</div>
                         <div className="mastercard">
@@ -53,7 +58,7 @@ const Card: React.FC = () => {
                 <div className="card-signature-wrapper">
                     <div className="card-signature-field">
                         <div className="card-signature-headline">Authorized Signature</div>
-                        <div className="card-signature">David Mraz</div>
+                        <div className="card-signature">{`${user?.firstname} ${user?.lastname}`}</div>
                     </div>
                     <div className="card-ccv">123</div>
                 </div>

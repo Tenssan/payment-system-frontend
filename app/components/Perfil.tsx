@@ -3,10 +3,16 @@ import React, { useEffect,useState } from 'react';
 import './PerfilStyle.css'; // Importa los estilos
 import Image from 'next/image';
 import ImgProfile from './assetsProfile/profile.jpg'
-
+import useFetchUser from './useFetchUser';
+import Button from '@/app/components/Button';
+import { useRouter } from  "next/navigation";;
 const Perfil: React.FC = () => {
-    
-    
+    const router = useRouter();
+    const { user, loading, error, fetchUser } = useFetchUser();
+    useEffect(() => {
+        // Llama a la función para obtener los datos del usuario
+        fetchUser(1); // Aquí puedes pasar el ID del usuario que desees mostrar
+    }, []);
     return (
         <div className="container">
             <div className="profile-wrapper">
@@ -77,10 +83,11 @@ const Perfil: React.FC = () => {
                         </li>
                     </ul>
                     <div className="profile-name">
-                        <h2>Jason Alexander</h2>
+                    <h2>{`${user?.firstname} ${user?.lastname}`}</h2>
                         <div className="profile-bio">
-                            I'm a JavaScript full-stack engineer,
-                            love working with <em>React</em> and <em>Node.js</em>.
+                            Datos: {user ? user.email : 'Loading...'} 
+                            <button onClick={() => router.push('/pages/standard-user/change-pass')} className='isabled:opacity-70 disabled:cursor-not-allowed rounded-md hover:opacity-80
+        transition w-full border-slate-700 flex items-center justify-center gap-2'>Cambiar Contraseña</button>
                         </div>
                     </div>
                 </div>

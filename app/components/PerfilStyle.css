@@ -1,3 +1,7 @@
+.button-container {
+    max-width: 10px; /* Define el ancho máximo del contenedor */
+    margin: 0 auto; /* Centra el contenedor horizontalmente */
+}
 :root {
     --background: #2C2C2C;
 }
