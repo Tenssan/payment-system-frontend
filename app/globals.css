@@ -29,3 +29,27 @@ body {
     text-wrap: balance;
   }
 }
+
+.toast-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.toast-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  max-width: 500px;
+  width: 100%;
+}
+
+.toast-button {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
