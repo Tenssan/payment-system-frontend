@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faBan } from '@fortawesome/free-solid-svg-icons';
+require('dotenv').config()
 
 const PaymentForm: React.FC = () => {
     const router = useRouter();
@@ -78,20 +79,21 @@ const PaymentForm: React.FC = () => {
     const handleSubmit = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.post(`${process.env.API_URL}/transactions`, {
+            /*const response = await axios.post(`${process.env.NEXT_PUBLIC_BACK_URL}/transactions`, {
                 email,
                 project: selectedProject,
                 paymentMethod,
                 amount,
                 description
-            });
+            });*/
+            const response = { status: 200, data: { transactionId: 1 } };
 
             if (response.status === 200) {
                 const transactionId = response.data.transactionId;
                 toast.success("Transaction completed successfully!");
 
                 setTimeout(() => {
-                    router.push(`/receipt/${transactionId}`);
+                    router.push(`payment/receipt/${transactionId}`);
                 }, 2000);
             } else {
                 toast.error("Transaction failed. Please try again.");

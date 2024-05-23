@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 
-const Receipt: React.FC = () => {
-    const { transactionId } = useParams();
+interface ReceiptProps {
+    transactionId: string;
+}
+//TODO quitar la id hardcodeada y hacer la peticion a la api
+const Receipt: React.FC<ReceiptProps> = ({transactionId}) => {
     const [transaction, setTransaction] = useState<any>(null);
 
     useEffect(() => {
         if (transactionId) {
             fetchTransactionDetails(transactionId as string);
+            console.log(transactionId);
+            setTransaction(transactionId);
         }
     }, [transactionId]);
 
