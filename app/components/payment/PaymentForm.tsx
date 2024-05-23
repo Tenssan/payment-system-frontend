@@ -51,7 +51,7 @@ const PaymentForm: React.FC = () => {
         <Container>
             <FormWrap>
                 <Heading title="Make a Payment" />
-                <div className="space-y-4">
+                <div className="space-y-4 justify-center items-center">
                     <input 
                         type="text" 
                         placeholder="Remitent email" 
