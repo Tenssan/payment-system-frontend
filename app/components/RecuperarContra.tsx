@@ -1,23 +1,22 @@
 'use client';
 import React, { useState } from 'react';
 import './RecuperarContraStyle.css';
-import { useRouter } from "next/navigation";
+import useChangePassword from './useFetchRecuperarContra';
 
-const PasswordReset: React.FC = () => {
-  
+const PasswordReset: React.FC= () => {
+  const { loading, error, success, changePassword } = useChangePassword();
+
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (newPassword !== repeatPassword) {
       alert("Las contraseñas nuevas no coinciden.");
       return;
     }
-    // Aquí iría la lógica para manejar el cambio de contraseña
-    console.log('Contraseña antigua:', oldPassword);
-    console.log('Nueva contraseña:', newPassword);
+    await changePassword(oldPassword, newPassword);
   };
 
   return (
@@ -54,7 +53,9 @@ const PasswordReset: React.FC = () => {
             required
           />
         </div>
-        <button type="submit">Cambiar Contraseña</button>
+        <button type="submit" disabled={loading}>Cambiar Contraseña</button>
+        {error && <p className="error">Error cambiando la contraseña</p>}
+        {success && <p className="success">Contraseña cambiada exitosamente</p>}
       </form>
     </div>
   );
