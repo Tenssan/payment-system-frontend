@@ -53,7 +53,7 @@ const PasswordReset: React.FC= () => {
             required
           />
         </div>
-        <button type="submit" disabled={loading}>Cambiar Contraseña</button>
+        <button type="submit" className='buttonchangepwd' disabled={loading}>Cambiar Contraseña</button>
         {error && <p className="error">Error cambiando la contraseña</p>}
         {success && <p className="success">Contraseña cambiada exitosamente</p>}
       </form>

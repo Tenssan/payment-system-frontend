@@ -42,7 +42,7 @@ const Landing: React.FC = () => {
     }, [isMouseDown, startX, scrollLeft]);
     
     return (
-        <div className="container">
+        <div className="containerHistory pt-5">
             <div className="action-buttons">
                 <a href="#" className="action-button action-button--primary">
                     <svg width="16" height="16" fill="currentColor" focusable="false" viewBox="0 0 24 24"><path d="M21.343 10.543 12.77 1.972a.829.829 0 0 0-1.2 0L3 10.543l1.2 1.2 7.114-7.114v17.657h1.715V4.63l7.114 7.114 1.2-1.2Z"></path></svg>

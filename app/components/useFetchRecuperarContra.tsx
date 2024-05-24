@@ -28,9 +28,21 @@ const useChangePassword = (): ChangePasswordHookResult => {
           oldPassword,
           newPassword,
         }),
-      });
-
-      if (!response.ok) {
+      }).then(
+        async (res) => {
+          if(!res.ok) {
+            const text = await res.text();
+           }
+          else {
+           return res.json();
+         }    
+        })
+        .catch(err => {
+           console.log('caught it!',err);
+        }
+      );
+      console.log(response);
+      if (response.error) {
         throw new Error('Failed to change password');
       }
 

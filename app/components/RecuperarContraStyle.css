@@ -2,15 +2,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #f7f7f7;
   }
   
   .password-reset-form {
-    background: #fff;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 400px;
     width: 100%;
   }
@@ -37,7 +33,7 @@
     border-radius: 4px;
   }
   
-  button {
+  .buttonchangepwd {
     width: 100%;
     padding: 10px;
     background-color: #007bff;
@@ -48,6 +44,6 @@
     cursor: pointer;
   }
   
-  button:hover {
+  .buttonchangepwd:hover {
     background-color: #0056b3;
   }

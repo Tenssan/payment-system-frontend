@@ -15,8 +15,7 @@ body {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    min-height: 100vh;
-    padding: 1rem;
+
     font-family: "Inter", sans-serif;
     color: var(--content-primary);
     font-size: 16px;
@@ -194,9 +193,9 @@ body {
     background: var(--secondary-hover);
 }
 
-.container {
+.containerHistory {
     max-width: 45rem;
     width: 100%;
     min-width: 20rem;
-    margin: 30.5rem auto;
+    margin: auto;
 }
