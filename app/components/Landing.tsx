@@ -1,4 +1,4 @@
-'use client';
+/*'use client';
 import React, { useEffect,useState } from 'react';
 import './LandingStyle.css'; // Importa los estilos
 
@@ -114,6 +114,56 @@ const Landing: React.FC = () => {
                         </div>
                     </div>         
                 </a>
+            </div>
+        </div>
+    );
+};
+
+export default Landing;*/
+'use client'
+import React, { useEffect, useState } from 'react';
+import './LandingStyle.css'; // Importa los estilos
+import useFetchTransactions from './useFetchAllTransactions';
+
+const Landing: React.FC = () => {
+    const [storedToken, setStoredToken] = useState<string | null>(null);
+    const { transactions, loading, error, fetchTransactions } = useFetchTransactions(); 
+
+    useEffect(() => {
+        const savedToken = localStorage.getItem('token');
+        if (savedToken) {
+            setStoredToken(savedToken);
+        }
+    }, []);
+    
+    useEffect(() => {
+        if (storedToken && !transactions) {
+            fetchTransactions(storedToken);
+        }
+    }, [storedToken, fetchTransactions, transactions]);
+
+    return (
+        <div className="containerHistory pt-5">
+            <div id="bank-accounts">
+                {/* Aquí renderiza las transacciones */}
+                {loading ? (
+                    <p>Loading transactions...</p>
+                ) : error ? (
+                    <p>Error loading transactions</p>
+                ) : transactions ? (
+                    transactions.map((tx, index) => (
+                        <a key={index} href={`#${tx.description}`} className="bank-account">
+                            <div>
+                                <h2 role="presentation">{tx.amount}</h2>
+                                <div className="currency">
+                                    {tx.description} - {new Date(tx.date).toLocaleDateString()}
+                                </div>
+                            </div>
+                        </a>
+                    ))
+                ) : (
+                    <p>No transactions found</p>
+                )}
             </div>
         </div>
     );
