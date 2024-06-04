@@ -120,7 +120,7 @@ const Landing: React.FC = () => {
 };
 
 export default Landing;*/
-'use client'
+'use client';
 import React, { useEffect, useState } from 'react';
 import './LandingStyle.css'; // Importa los estilos
 import useFetchTransactions from './useFetchAllTransactions';
@@ -130,14 +130,25 @@ const Landing: React.FC = () => {
     const { transactions, loading, error, fetchTransactions } = useFetchTransactions(); 
 
     useEffect(() => {
-        const savedToken = localStorage.getItem('token');
-        if (savedToken) {
-            setStoredToken(savedToken);
-        }
+        const fetchToken = () => {
+            const savedToken = localStorage.getItem('token');
+            if (savedToken) {
+                console.log('Retrieved Token:', savedToken); // Print the retrieved token
+                setStoredToken(savedToken);
+            }
+        };
+
+        fetchToken();
+        window.addEventListener('storage', fetchToken); // Listen to storage changes
+
+        return () => {
+            window.removeEventListener('storage', fetchToken);
+        };
     }, []);
     
     useEffect(() => {
         if (storedToken && !transactions) {
+            console.log('Using Token:', storedToken); // Print the token being used
             fetchTransactions(storedToken);
         }
     }, [storedToken, fetchTransactions, transactions]);
