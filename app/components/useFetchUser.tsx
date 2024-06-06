@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 require('dotenv').config();
 
 interface Role {
@@ -27,7 +27,7 @@ const useFetchUser = (): UseFetchUserResult => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const fetchUser = async (token: string) => {
+  const fetchUser = useCallback(async (token: string) => {
     setLoading(true);
     setError(false);
 
@@ -51,7 +51,7 @@ const useFetchUser = (): UseFetchUserResult => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return {
     user,
