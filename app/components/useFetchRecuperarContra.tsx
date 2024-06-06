@@ -17,32 +17,27 @@ const useChangePassword = (): ChangePasswordHookResult => {
     setError(false);
     setSuccess(false);
 
+    const token = localStorage.getItem('token');
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/user/password/${4}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/user/password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Agrega el token en el encabezado de autorización
         },
         body: JSON.stringify({
-          email:"testuser",
           oldPassword,
           newPassword,
         }),
-      }).then(
-        async (res) => {
-          if(!res.ok) {
-            const text = await res.text();
-           }
-          else {
-           return res.json();
-         }    
-        })
-        .catch(err => {
-           console.log('caught it!',err);
-        }
-      );
-      console.log(response);
-      if (response.error) {
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to change password');
+      }
+
+      const data = await response.json();
+      if (data.error) {
         throw new Error('Failed to change password');
       }
 

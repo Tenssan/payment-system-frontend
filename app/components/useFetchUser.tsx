@@ -1,5 +1,6 @@
 import { useState } from 'react';
-require('dotenv').config()
+require('dotenv').config();
+
 interface Role {
   roleid: number;
   name: string;
@@ -18,7 +19,7 @@ interface UseFetchUserResult {
   user: User | null;
   loading: boolean;
   error: boolean;
-  fetchUser: (userid: number) => void;
+  fetchUser: (token: string) => void;
 }
 
 const useFetchUser = (): UseFetchUserResult => {
@@ -26,13 +27,16 @@ const useFetchUser = (): UseFetchUserResult => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
-  const fetchUser = async (userid: number) => {
+  const fetchUser = async (token: string) => {
     setLoading(true);
     setError(false);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/user/${userid}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/user`, {
         method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {

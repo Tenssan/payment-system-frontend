@@ -46,7 +46,16 @@ const UserSidebar: React.FC = () => {
           >
             <FontAwesomeIcon icon={faReceipt} className="w-5 h-5" />
             <span className="hidden md:hidden lg:block ml-2">
-              Transacciones
+              Transactions
+            </span>
+          </button>
+          <button
+            onClick={() => router.push("/pages/user/sub")}
+            className="rounded-full py-2 px-4 w-full text-left hover:bg-gray-700 flex items-center justify-center md:justify-start"
+          >
+            <FontAwesomeIcon icon={faReceipt} className="w-5 h-5" />
+            <span className="hidden md:hidden lg:block ml-2">
+              Subscriptions
             </span>
           </button>
           <button

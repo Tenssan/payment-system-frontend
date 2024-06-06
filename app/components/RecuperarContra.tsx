@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import './RecuperarContraStyle.css';
 import useChangePassword from './useFetchRecuperarContra';
 
-const PasswordReset: React.FC= () => {
+const PasswordReset: React.FC = () => {
   const { loading, error, success, changePassword } = useChangePassword();
 
   const [oldPassword, setOldPassword] = useState('');
