@@ -1,10 +1,11 @@
+'use client';
 import Container from '../../../components/Container';
-import Transactions from '../../../components/transanctions/Transanctions';
+import TransactionsTable from '../../../components/transanctions/TransactionsTable';
 
 const StandardTransactionsPage: React.FC = () => {
     return (
         <Container>
-            <Transactions />
+            <TransactionsTable/>
         </Container>
     );
 };
