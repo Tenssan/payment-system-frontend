@@ -50,7 +50,10 @@ const TopUsers: React.FC = () => {
       }
     };
 
-    fetchTopUsers();
+    //wait 1 second before fetching data
+    setTimeout(() => {
+      fetchTopUsers();
+    }, 1000);
   }, [token]);
 
   const placeholders = Array.from({ length: 5 - topUsers.length });
@@ -158,3 +161,4 @@ const TopUsers: React.FC = () => {
 };
 
 export default TopUsers;
+
