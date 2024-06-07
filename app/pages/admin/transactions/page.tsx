@@ -1,9 +1,11 @@
+import TransactionsTable from "@/app/components/admin/dashboard/TransactionsTable";
+
 const Transactions: React.FC = () => {
-    return (
-        <div>
-            <h1>All Transactions</h1>
-        </div>
-    );
+  return (
+    <div>
+      <TransactionsTable />
+    </div>
+  );
 };
 
 export default Transactions;

@@ -1,7 +1,9 @@
+import SubscriptionTable from "@/app/components/admin/dashboard/SubscriptionsTable";
+
 const Subscriptions: React.FC = () => {
   return (
     <div>
-      <h1>All Subscriptions</h1>
+      <SubscriptionTable />
     </div>
   );
 };

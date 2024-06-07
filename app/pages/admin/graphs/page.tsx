@@ -1,13 +1,21 @@
-import MonthlyTransactionsGraph from "../../../components/admin/dashboard/MontlhyTransactionsGraph";
-import TopUsersByTransactions from "../../../components/admin/dashboard/TopUsersByTransactions";
+import MonthlyTransactionsGraph from "@/app/components/admin/dashboard/MontlhyTransactionsGraph";
+import TopUsersByTransactions from "@/app/components/admin/dashboard/TopUsersByTransactions";
+import MostTransactionsProject from "@/app/components/admin/dashboard/MostTransactionsProject";
 
 const Graphs: React.FC = () => {
   return (
-    <div className="flex flex-col">
-      <div>
-        <TopUsersByTransactions />
+    <div className="p-4">
+      <div className="flex flex-col md:flex-row justify-between mb-8">
+        <div className="w-full md:w-1/2 p-2">
+          <TopUsersByTransactions />
+        </div>
+        <div className="w-full pt-4 md:w-1/2 p-2">
+          <MostTransactionsProject />
+        </div>
       </div>
-      <MonthlyTransactionsGraph />
+      <div className="w-full">
+        <MonthlyTransactionsGraph />
+      </div>
     </div>
   );
 };

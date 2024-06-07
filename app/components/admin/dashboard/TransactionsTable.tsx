@@ -1,35 +1,68 @@
-'use client';
-import * as React from 'react';
-import axios from 'axios';
-import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import { visuallyHidden } from '@mui/utils';
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { alpha } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import Checkbox from "@mui/material/Checkbox";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import { visuallyHidden } from "@mui/utils";
 
-interface TransactionData {
+interface Transaction {
   transactionid: number;
   description: string;
   amount: number;
   date: string;
   status: string;
-  origin: string;
+  project: {
+    projectid: number;
+    name: string;
+  };
+  paymentMethod: {
+    paymentmethodid: number;
+    name: string;
+  };
+  remittent: {
+    userid: number;
+    email: string;
+    rut: string;
+    firstname: string;
+    lastname: string;
+  };
+  destinatary: {
+    userid: number;
+    email: string;
+    rut: string;
+    firstname: string;
+    lastname: string;
+  };
+}
+
+interface SimplifiedTransaction {
+  transactionid: number;
+  description: string;
+  amount: number;
+  date: string;
+  status: string;
+  projectName: string;
+  paymentMethodName: string;
+  remittentEmail: string;
+  destinataryEmail: string;
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -42,21 +75,24 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
-type Order = 'asc' | 'desc';
+type Order = "asc" | "desc";
 
 function getComparator<Key extends keyof any>(
   order: Order,
-  orderBy: Key,
+  orderBy: Key
 ): (
   a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
+  b: { [key in Key]: number | string }
 ) => number {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
+function stableSort<T>(
+  array: readonly T[],
+  comparator: (a: T, b: T) => number
+) {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -70,23 +106,54 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof TransactionData;
+  id: keyof SimplifiedTransaction;
   label: string;
   numeric: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
-  { id: 'transactionid', numeric: true, disablePadding: false, label: 'ID' },
-  { id: 'description', numeric: false, disablePadding: false, label: 'Description' },
-  { id: 'amount', numeric: true, disablePadding: false, label: 'Amount' },
-  { id: 'date', numeric: false, disablePadding: false, label: 'Date' },
-  { id: 'status', numeric: false, disablePadding: false, label: 'Status' },
-  { id: 'origin', numeric: false, disablePadding: false, label: 'Origin' },
+  { id: "transactionid", numeric: true, disablePadding: false, label: "ID" },
+  {
+    id: "description",
+    numeric: false,
+    disablePadding: false,
+    label: "Description",
+  },
+  { id: "amount", numeric: true, disablePadding: false, label: "Amount" },
+  { id: "date", numeric: false, disablePadding: false, label: "Date" },
+  { id: "status", numeric: false, disablePadding: false, label: "Status" },
+  {
+    id: "projectName",
+    numeric: false,
+    disablePadding: false,
+    label: "Project",
+  },
+  {
+    id: "paymentMethodName",
+    numeric: false,
+    disablePadding: false,
+    label: "Payment Method",
+  },
+  {
+    id: "remittentEmail",
+    numeric: false,
+    disablePadding: false,
+    label: "Remittent Email",
+  },
+  {
+    id: "destinataryEmail",
+    numeric: false,
+    disablePadding: false,
+    label: "Destinatary Email",
+  },
 ];
 
 interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof TransactionData) => void;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof SimplifiedTransaction
+  ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
@@ -94,10 +161,19 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
-  const createSortHandler = (property: keyof TransactionData) => (event: React.MouseEvent<unknown>) => {
-    onRequestSort(event, property);
-  };
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
+  const createSortHandler =
+    (property: keyof SimplifiedTransaction) =>
+    (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
 
   return (
     <TableHead>
@@ -108,25 +184,25 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all transactions' }}
+            inputProps={{ "aria-label": "select all transactions" }}
           />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? "right" : "left"}
+            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -150,16 +226,30 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
-          bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+          bgcolor: (theme) =>
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
         }),
       }}
     >
       {numSelected > 0 ? (
-        <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          color="inherit"
+          variant="subtitle1"
+          component="div"
+        >
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
           Transactions
         </Typography>
       )}
@@ -181,50 +271,58 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 export default function TransactionsTable() {
-  const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof TransactionData>('transactionid');
+  const [order, setOrder] = React.useState<Order>("asc");
+  const [orderBy, setOrderBy] =
+    React.useState<keyof SimplifiedTransaction>("transactionid");
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [transactions, setTransactions] = React.useState<TransactionData[]>([]);
-  //const token = localStorage.getItem('token');
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJpZCI6NiwiZW1haWwiOiJjbGF1ZGlvLnVzZXJAdXNlci5jb20iLCJydXQiOiIzNiIsImZpcnN0bmFtZSI6IkNsYXVkaW8iLCJsYXN0bmFtZSI6Ik1vbmRhY2EifSwiaWF0IjoxNzE3NTI4MTk3LCJleHAiOjE3MTc1MzgxOTd9.iJLBRpuX9RiCrl7dGoxuvREeINF2h8ogtLnTLMTERqM"
+  const [transactions, setTransactions] = React.useState<
+    SimplifiedTransaction[]
+  >([]);
+  const token = localStorage.getItem("token");
 
   React.useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACK_URL}/transactions`, {
-          headers: {
-            "Access-Control-Allow-Origin": "*", // Permitir cualquier origen
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Métodos HTTP permitidos
-            "Access-Control-Allow-Headers": "Content-Type, Authorization", // Encabezados permitidos
-            Authorization: `Bearer ${token}`
-          },
-        });
-        const receivedTransactions = response.data.receivedTransactions.map((tx: any) => ({
-          ...tx,
-          origin: 'Received',
+        const response = await axios.get<Transaction[]>(
+          `${process.env.NEXT_PUBLIC_BACK_URL}/transactions`,
+          {
+            headers: {
+              "Access-Control-Allow-Origin": "*", // Allow any origin
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Allowed HTTP methods
+              "Access-Control-Allow-Headers": "Content-Type, Authorization", // Allowed headers
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const simplifiedData = response.data.map((transaction) => ({
+          transactionid: transaction.transactionid,
+          description: transaction.description,
+          amount: transaction.amount,
+          date: transaction.date,
+          status: transaction.status,
+          projectName: transaction.project.name,
+          paymentMethodName: transaction.paymentMethod.name,
+          remittentEmail: transaction.remittent.email,
+          destinataryEmail: transaction.destinatary.email,
         }));
-        const emittedTransactions = response.data.emittedTransactions.map((tx: any) => ({
-          ...tx,
-          origin: 'Emitted',
-        }));
-        setTransactions([...receivedTransactions, ...emittedTransactions]);
+        setTransactions(simplifiedData);
       } catch (error) {
-        console.error('Error fetching transactions:', error);
+        console.error("Error fetching transactions:", error);
       }
     };
 
     fetchTransactions();
-  }, []);
+  }, [token]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof TransactionData,
+    property: keyof SimplifiedTransaction
   ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -250,7 +348,7 @@ export default function TransactionsTable() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     setSelected(newSelected);
@@ -260,7 +358,9 @@ export default function TransactionsTable() {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -278,20 +378,20 @@ export default function TransactionsTable() {
     () =>
       stableSort(transactions, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage,
+        page * rowsPerPage + rowsPerPage
       ),
-    [order, orderBy, page, rowsPerPage, transactions],
+    [order, orderBy, page, rowsPerPage, transactions]
   );
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Paper sx={{ width: '100%', mb: 2 }}>
+    <Box sx={{ width: "100%" }}>
+      <Paper sx={{ width: "100%", mb: 2 }}>
         <EnhancedTableToolbar numSelected={selected.length} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size={dense ? "small" : "medium"}
           >
             <EnhancedTableHead
               numSelected={selected.length}
@@ -315,29 +415,39 @@ export default function TransactionsTable() {
                     tabIndex={-1}
                     key={row.transactionid}
                     selected={isItemSelected}
-                    sx={{ cursor: 'pointer' }}
+                    sx={{ cursor: "pointer" }}
                   >
                     <TableCell padding="checkbox">
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
-                        inputProps={{ 'aria-labelledby': labelId }}
+                        inputProps={{ "aria-labelledby": labelId }}
                       />
                     </TableCell>
-                    <TableCell component="th" id={labelId} scope="row" padding="none">
+                    <TableCell
+                      component="th"
+                      id={labelId}
+                      scope="row"
+                      padding="none"
+                    >
                       {row.transactionid}
                     </TableCell>
                     <TableCell align="left">{row.description}</TableCell>
                     <TableCell align="right">{row.amount}</TableCell>
-                    <TableCell align="left">{new Date(row.date).toLocaleDateString()}</TableCell>
+                    <TableCell align="left">
+                      {new Date(row.date).toLocaleDateString()}
+                    </TableCell>
                     <TableCell align="left">{row.status}</TableCell>
-                    <TableCell align="left">{row.origin}</TableCell>
+                    <TableCell align="left">{row.projectName}</TableCell>
+                    <TableCell align="left">{row.paymentMethodName}</TableCell>
+                    <TableCell align="left">{row.remittentEmail}</TableCell>
+                    <TableCell align="left">{row.destinataryEmail}</TableCell>
                   </TableRow>
                 );
               })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
-                  <TableCell colSpan={7} />
+                  <TableCell colSpan={10} />
                 </TableRow>
               )}
             </TableBody>

@@ -6,15 +6,13 @@ import axios from "axios";
 interface ReceiptProps {
   transactionId: string;
 }
-//TODO quitar la id hardcodeada y hacer la peticion a la api
+
 const Receipt: React.FC<ReceiptProps> = ({ transactionId }) => {
   const [transaction, setTransaction] = useState<any>(null);
 
   useEffect(() => {
     if (transactionId) {
-      fetchTransactionDetails(transactionId as string);
-      console.log(transactionId);
-      setTransaction(transactionId);
+      fetchTransactionDetails(transactionId);
     }
   }, [transactionId]);
 
@@ -36,7 +34,7 @@ const Receipt: React.FC<ReceiptProps> = ({ transactionId }) => {
       <h1 className="text-2xl font-bold mb-4">Receipt</h1>
       <div className="bg-white p-4 shadow rounded-lg">
         <p>
-          <strong>Transaction ID:</strong> {transaction.id}
+          <strong>Transaction ID:</strong> {transaction.transactionid}
         </p>
         <p>
           <strong>Status:</strong> {transaction.status}
@@ -45,17 +43,74 @@ const Receipt: React.FC<ReceiptProps> = ({ transactionId }) => {
           <strong>Amount:</strong> ${transaction.amount}
         </p>
         <p>
-          <strong>Date:</strong> {transaction.date}
-        </p>
-        <p>
-          <strong>Project:</strong> {transaction.project}
-        </p>
-        <p>
-          <strong>Payment Method:</strong> {transaction.paymentMethod}
+          <strong>Date:</strong> {new Date(transaction.date).toLocaleString()}
         </p>
         <p>
           <strong>Description:</strong> {transaction.description}
         </p>
+        <div className="mt-4">
+          <h2 className="text-xl font-semibold">Project</h2>
+          <p>
+            <strong>Project ID:</strong> {transaction.project.projectid}
+          </p>
+          <p>
+            <strong>Name:</strong> {transaction.project.name}
+          </p>
+        </div>
+        <div className="mt-4">
+          <h2 className="text-xl font-semibold">Payment Method</h2>
+          <p>
+            <strong>Payment Method ID:</strong>{" "}
+            {transaction.paymentMethod.paymentmethodid}
+          </p>
+          <p>
+            <strong>Name:</strong> {transaction.paymentMethod.name}
+          </p>
+        </div>
+        <div className="mt-4">
+          <h2 className="text-xl font-semibold">Remittent</h2>
+          <p>
+            <strong>User ID:</strong> {transaction.remittent.userid}
+          </p>
+          <p>
+            <strong>Email:</strong> {transaction.remittent.email}
+          </p>
+          <p>
+            <strong>RUT:</strong> {transaction.remittent.rut}
+          </p>
+          <p>
+            <strong>First Name:</strong> {transaction.remittent.firstname}
+          </p>
+          <p>
+            <strong>Last Name:</strong> {transaction.remittent.lastname}
+          </p>
+          <p>
+            <strong>Role:</strong>{" "}
+            {transaction.remittent.role.map((r: any) => r.name).join(", ")}
+          </p>
+        </div>
+        <div className="mt-4">
+          <h2 className="text-xl font-semibold">Destinatary</h2>
+          <p>
+            <strong>User ID:</strong> {transaction.destinatary.userid}
+          </p>
+          <p>
+            <strong>Email:</strong> {transaction.destinatary.email}
+          </p>
+          <p>
+            <strong>RUT:</strong> {transaction.destinatary.rut}
+          </p>
+          <p>
+            <strong>First Name:</strong> {transaction.destinatary.firstname}
+          </p>
+          <p>
+            <strong>Last Name:</strong> {transaction.destinatary.lastname}
+          </p>
+          <p>
+            <strong>Role:</strong>{" "}
+            {transaction.destinatary.role.map((r: any) => r.name).join(", ")}
+          </p>
+        </div>
       </div>
     </div>
   );
