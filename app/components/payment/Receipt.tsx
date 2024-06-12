@@ -9,6 +9,7 @@ interface ReceiptProps {
 
 const Receipt: React.FC<ReceiptProps> = ({ transactionId }) => {
   const [transaction, setTransaction] = useState<any>(null);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (transactionId) {
@@ -18,7 +19,17 @@ const Receipt: React.FC<ReceiptProps> = ({ transactionId }) => {
 
   const fetchTransactionDetails = async (id: string) => {
     try {
-      const response = await axios.get(`/api/transactions/${id}`);
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACK_URL}/transactions/${id}`,
+        {
+          headers: {
+            "Access-Control-Allow-Origin": "*", // Allow any origin
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Allowed HTTP methods
+            "Access-Control-Allow-Headers": "Content-Type, Authorization", // Allowed headers
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setTransaction(response.data);
     } catch (error) {
       console.error("Error fetching transaction details:", error);
@@ -84,10 +95,6 @@ const Receipt: React.FC<ReceiptProps> = ({ transactionId }) => {
           <p>
             <strong>Last Name:</strong> {transaction.remittent.lastname}
           </p>
-          <p>
-            <strong>Role:</strong>{" "}
-            {transaction.remittent.role.map((r: any) => r.name).join(", ")}
-          </p>
         </div>
         <div className="mt-4">
           <h2 className="text-xl font-semibold">Destinatary</h2>
@@ -105,10 +112,6 @@ const Receipt: React.FC<ReceiptProps> = ({ transactionId }) => {
           </p>
           <p>
             <strong>Last Name:</strong> {transaction.destinatary.lastname}
-          </p>
-          <p>
-            <strong>Role:</strong>{" "}
-            {transaction.destinatary.role.map((r: any) => r.name).join(", ")}
           </p>
         </div>
       </div>

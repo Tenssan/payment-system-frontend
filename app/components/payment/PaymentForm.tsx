@@ -120,7 +120,7 @@ const PaymentForm: React.FC = () => {
       );
 
       if (response.status === 201) {
-        const transactionId = response.data.transactionId;
+        const transactionId = response.data.transactionid;
         toast.success("Transaction completed successfully!");
 
         setTimeout(() => {

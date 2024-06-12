@@ -19,6 +19,9 @@ export async function middleware(request: NextRequest) {
       `${process.env.NEXT_PUBLIC_BACK_URL}/user/role`,
       {
         headers: {
+          "Access-Control-Allow-Origin": "*", // Allow any origin
+          "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Allowed HTTP methods
+          "Access-Control-Allow-Headers": "Content-Type, Authorization", // Allowed headers
           Authorization: `Bearer ${token}`,
         },
       }
