@@ -8,6 +8,7 @@ import image from "../public/imgs/ucn-bg.png";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 const Home: React.FC = () => {
   const router = useRouter();
@@ -19,10 +20,17 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
+
+      Cookies.remove("token");
+      Cookies.set("token", token, { expires: 1, path: "/", secure: false }); // Expires in 1 day
+
       axios
         .get(`${process.env.NEXT_PUBLIC_BACK_URL}/user/role`, {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
           },
         })
         .then((response) => {
