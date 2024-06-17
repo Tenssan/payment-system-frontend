@@ -17,7 +17,11 @@ import {
 
 const UserSidebar: React.FC = () => {
   const router = useRouter();
-
+  const handleLogout = () => {
+    console.log("Sesión cerrada");
+    localStorage.clear();
+    window.location.href = "https://management-system-frontend-woad.vercel.app/login";
+  };
   return (
     <nav
       className="fixed left-0 top-0 h-full w-16 md:w-64 text-white flex flex-col justify-between bg-center bg-opacity-30"
@@ -75,7 +79,10 @@ const UserSidebar: React.FC = () => {
         </div>
       </div>
       <div className="p-4">
-        <button className="rounded-full py-2 px-4 w-full text-left hover:bg-gray-700 flex items-center justify-center md:justify-start">
+      <button
+          onClick={handleLogout}
+          className="rounded-full py-2 px-4 w-full text-left hover:bg-gray-700 flex items-center justify-center md:justify-start"
+        >
           <FontAwesomeIcon icon={faRightFromBracket} className="w-5 h-5" />
           <span className="hidden md:hidden lg:block ml-2">Cerrar Sesión</span>
         </button>
