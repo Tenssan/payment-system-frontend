@@ -13,6 +13,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useTranslation } from "react-i18next";
 
 ChartJS.register(
   CategoryScale,
@@ -30,6 +31,7 @@ interface TransactionVolume {
 }
 
 const MonthlyTransactionsGraph: React.FC = () => {
+  const { t } = useTranslation();
   const [transactionVolume, setTransactionVolume] = useState<
     TransactionVolume[]
   >([]);
@@ -50,9 +52,9 @@ const MonthlyTransactionsGraph: React.FC = () => {
           `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/getTransactionCountPerDay`,
           {
             headers: {
-              "Access-Control-Allow-Origin": "*", // Permitir cualquier origen
-              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Métodos HTTP permitidos
-              "Access-Control-Allow-Headers": "Content-Type, Authorization", // Encabezados permitidos
+              "Access-Control-Allow-Origin": "*", // Allow any origin
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Allowed HTTP methods
+              "Access-Control-Allow-Headers": "Content-Type, Authorization", // Allowed headers
               Authorization: `Bearer ${token}`,
             },
           }
@@ -85,7 +87,7 @@ const MonthlyTransactionsGraph: React.FC = () => {
     labels,
     datasets: [
       {
-        label: "Transactions per Day",
+        label: t("transactionsPerDay"),
         data,
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
@@ -96,7 +98,7 @@ const MonthlyTransactionsGraph: React.FC = () => {
 
   return (
     <div className="p-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-bold mb-4">Transactions per Day</h2>
+      <h2 className="text-xl font-bold mb-4">{t("transactionsPerDay")}</h2>
       <Line data={chartData} />
     </div>
   );

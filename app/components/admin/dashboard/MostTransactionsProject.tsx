@@ -9,6 +9,7 @@ import {
   faMoneyBillWave,
   faExchangeAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import { useTranslation } from "react-i18next";
 
 interface Project {
   projectid: number;
@@ -23,6 +24,7 @@ interface ProjectDetails {
 }
 
 const MostTransactionsProject: React.FC = () => {
+  const { t } = useTranslation();
   const [topProject, setTopProject] = useState<Project | null>(null);
   const [projectDetails, setProjectDetails] = useState<ProjectDetails | null>(
     null
@@ -86,12 +88,12 @@ const MostTransactionsProject: React.FC = () => {
   }, [topProject, token]);
 
   if (!topProject || !projectDetails) {
-    return <div>Loading...</div>;
+    return <div>{t("loading")}</div>;
   }
 
   return (
     <div className="p-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-bold mb-4">Project with most transactions</h2>
+      <h2 className="text-xl font-bold mb-4">{t("mostTransactionsProject")}</h2>
       <div className="flex items-center mb-2">
         <FontAwesomeIcon
           icon={faProjectDiagram}
@@ -103,11 +105,11 @@ const MostTransactionsProject: React.FC = () => {
       </div>
       <p>
         <FontAwesomeIcon icon={faExchangeAlt} className="mr-2" />
-        Total Transactions: {topProject.total}
+        {t("totalTransactions")}: {topProject.total}
       </p>
       <p>
         <FontAwesomeIcon icon={faMoneyBillWave} className="mr-2" />
-        Total Amount: {topProject.amount.toLocaleString()}
+        {t("totalAmount")}: {topProject.amount.toLocaleString()}
       </p>
     </div>
   );

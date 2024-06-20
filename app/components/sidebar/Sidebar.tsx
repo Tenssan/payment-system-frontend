@@ -20,7 +20,8 @@ const UserSidebar: React.FC = () => {
   const handleLogout = () => {
     console.log("Sesión cerrada");
     localStorage.clear();
-    window.location.href = "https://management-system-frontend-woad.vercel.app/login";
+    window.location.href =
+      "https://management-system-frontend-woad.vercel.app/login";
   };
   return (
     <nav
@@ -49,9 +50,7 @@ const UserSidebar: React.FC = () => {
             className="rounded-full py-2 px-4 w-full text-left hover:bg-gray-700 flex items-center justify-center md:justify-start"
           >
             <FontAwesomeIcon icon={faReceipt} className="w-5 h-5" />
-            <span className="hidden md:hidden lg:block ml-2">
-              Transactions
-            </span>
+            <span className="hidden md:hidden lg:block ml-2">Transactions</span>
           </button>
           <button
             onClick={() => router.push("/pages/user/sub")}
@@ -79,7 +78,7 @@ const UserSidebar: React.FC = () => {
         </div>
       </div>
       <div className="p-4">
-      <button
+        <button
           onClick={handleLogout}
           className="rounded-full py-2 px-4 w-full text-left hover:bg-gray-700 flex items-center justify-center md:justify-start"
         >

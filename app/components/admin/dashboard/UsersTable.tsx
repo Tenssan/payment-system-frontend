@@ -22,6 +22,7 @@ import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
+import { useTranslation } from "react-i18next";
 
 interface UserData {
   userid: number;
@@ -115,6 +116,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (property: keyof UserData) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
+  const { t } = useTranslation();
 
   return (
     <TableHead>
@@ -125,7 +127,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ "aria-label": "select all users" }}
+            inputProps={{ "aria-label": t("selectAllUsers") }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -140,10 +142,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {t(headCell.label)}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
+                  {order === "desc"
+                    ? t("sortedDescending")
+                    : t("sortedAscending")}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -160,6 +164,7 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
+  const { t } = useTranslation();
 
   return (
     <Toolbar
@@ -182,7 +187,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} {t("selected")}
         </Typography>
       ) : (
         <Typography
@@ -191,17 +196,17 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          All Users
+          {t("allUsers")}
         </Typography>
       )}
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
+        <Tooltip title={t("delete")}>
           <IconButton>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
+        <Tooltip title={t("filterList")}>
           <IconButton>
             <FilterListIcon />
           </IconButton>
@@ -212,6 +217,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 export default function UsersTable() {
+  const { t } = useTranslation();
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof UserData>("userid");
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -228,9 +234,9 @@ export default function UsersTable() {
           `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/getAllUsers`,
           {
             headers: {
-              "Access-Control-Allow-Origin": "*", // Permitir cualquier origen
-              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Métodos HTTP permitidos
-              "Access-Control-Allow-Headers": "Content-Type, Authorization", // Encabezados permitidos
+              "Access-Control-Allow-Origin": "*", // Allow any origin
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Allowed HTTP methods
+              "Access-Control-Allow-Headers": "Content-Type, Authorization", // Allowed headers
               Authorization: `Bearer ${token}`,
             },
           }
@@ -242,7 +248,7 @@ export default function UsersTable() {
     };
 
     fetchUsers();
-  }, []);
+  }, [token]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -386,7 +392,7 @@ export default function UsersTable() {
       </Paper>
       <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
+        label={t("densePadding")}
       />
     </Box>
   );

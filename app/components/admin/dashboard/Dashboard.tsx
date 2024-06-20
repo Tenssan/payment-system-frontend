@@ -21,6 +21,7 @@ import Tooltip from "@mui/material/Tooltip";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { visuallyHidden } from "@mui/utils";
+import { useTranslation } from "react-i18next";
 
 interface Transaction {
   transactionid: number;
@@ -38,16 +39,21 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-  { id: "transactionid", numeric: true, disablePadding: false, label: "ID" },
+  {
+    id: "transactionid",
+    numeric: true,
+    disablePadding: false,
+    label: "transactionID",
+  },
   {
     id: "description",
     numeric: false,
     disablePadding: false,
-    label: "Description",
+    label: "description",
   },
-  { id: "amount", numeric: true, disablePadding: false, label: "Amount" },
-  { id: "date", numeric: false, disablePadding: false, label: "Date" },
-  { id: "status", numeric: false, disablePadding: false, label: "Status" },
+  { id: "amount", numeric: true, disablePadding: false, label: "amount" },
+  { id: "date", numeric: false, disablePadding: false, label: "date" },
+  { id: "status", numeric: false, disablePadding: false, label: "status" },
 ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -114,6 +120,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (property: keyof Transaction) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
+  const { t } = useTranslation();
 
   return (
     <TableHead>
@@ -139,10 +146,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {t(headCell.label)}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
+                  {order === "desc"
+                    ? t("sortedDescending")
+                    : t("sortedAscending")}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -159,6 +168,7 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
+  const { t } = useTranslation();
 
   return (
     <Toolbar
@@ -181,7 +191,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} {t("selected")}
         </Typography>
       ) : (
         <Typography
@@ -190,7 +200,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          Last 5 payments
+          {t("lastFivePayments")}
         </Typography>
       )}
     </Toolbar>
@@ -209,6 +219,7 @@ const Dashboard: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [dense, setDense] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -360,13 +371,13 @@ const Dashboard: React.FC = () => {
     <div className="p-4">
       <div className="flex justify-between mb-8">
         <div className="w-1/2 p-4 bg-white shadow-md rounded-lg mr-4">
-          <h2 className="text-xl font-bold mb-2">Total Month Value</h2>
+          <h2 className="text-xl font-bold mb-2">{t("totalMonthValue")}</h2>
           <p className="text-2xl">
             {totalMonthValue !== null ? totalMonthValue : "Loading..."}
           </p>
         </div>
         <div className="w-1/2 p-4 bg-white shadow-md rounded-lg ml-4">
-          <h2 className="text-xl font-bold mb-2">Top Grossing Project</h2>
+          <h2 className="text-xl font-bold mb-2">{t("topGrossingProject")}</h2>
           {topProject && projectDetails ? (
             <div>
               <p className="text-lg font-semibold">{projectDetails.name}</p>
@@ -449,7 +460,7 @@ const Dashboard: React.FC = () => {
           </Paper>
           <FormControlLabel
             control={<Switch checked={dense} onChange={handleChangeDense} />}
-            label="Dense padding"
+            label={t("densePadding")}
           />
         </Box>
       </div>

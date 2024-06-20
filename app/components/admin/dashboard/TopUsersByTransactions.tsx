@@ -5,6 +5,7 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "@mui/material/Tooltip";
+import { useTranslation } from "react-i18next";
 
 interface User {
   userid: number;
@@ -19,6 +20,7 @@ interface TopUser {
 }
 
 const TopUsers: React.FC = () => {
+  const { t } = useTranslation();
   const [topUsers, setTopUsers] = useState<TopUser[]>([]);
   const [token, setToken] = useState<string | null>(null);
 
@@ -50,7 +52,7 @@ const TopUsers: React.FC = () => {
       }
     };
 
-    //wait 1 second before fetching data
+    // Wait 1 second before fetching data
     setTimeout(() => {
       fetchTopUsers();
     }, 1000);
@@ -61,9 +63,7 @@ const TopUsers: React.FC = () => {
   return (
     <div className="p-4">
       <div className="p-4 bg-white shadow-md rounded-lg hover:bg-gray-100 transition duration-300">
-        <h2 className="text-xl font-bold mb-4">
-          Top 5 Users with Most Transactions
-        </h2>
+        <h2 className="text-xl font-bold mb-4">{t("topUsersTitle")}</h2>
         <div className="grid grid-rows-3 grid-cols-2 gap-4">
           {topUsers.slice(0, 2).map((topUser) => (
             <Tooltip
@@ -77,10 +77,12 @@ const TopUsers: React.FC = () => {
                   <p className="font-semibold">
                     {topUser.user.firstname} {topUser.user.lastname}
                   </p>
-                  <p>Email: {topUser.user.email}</p>
+                  <p>
+                    {t("email")}: {topUser.user.email}
+                  </p>
                   <p>
                     <FontAwesomeIcon icon={faExchangeAlt} className="mr-2" />
-                    Total Transactions: {topUser.total}
+                    {t("totalTransactions")}: {topUser.total}
                   </p>
                 </div>
               </div>
@@ -91,7 +93,7 @@ const TopUsers: React.FC = () => {
               key={`placeholder-top-${index}`}
               className="flex items-center border-2 border-dashed p-2 rounded shadow-md justify-center"
             >
-              <p className="text-gray-500">Placeholder</p>
+              <p className="text-gray-500">{t("placeholder")}</p>
             </div>
           ))}
 
@@ -107,10 +109,12 @@ const TopUsers: React.FC = () => {
                   <p className="font-semibold">
                     {topUser.user.firstname} {topUser.user.lastname}
                   </p>
-                  <p>Email: {topUser.user.email}</p>
+                  <p>
+                    {t("email")}: {topUser.user.email}
+                  </p>
                   <p>
                     <FontAwesomeIcon icon={faExchangeAlt} className="mr-2" />
-                    Total Transactions: {topUser.total}
+                    {t("totalTransactions")}: {topUser.total}
                   </p>
                 </div>
               </div>
@@ -121,7 +125,7 @@ const TopUsers: React.FC = () => {
               key={`placeholder-middle-${index}`}
               className="flex items-center border-2 border-dashed p-2 rounded shadow-md justify-center"
             >
-              <p className="text-gray-500">Placeholder</p>
+              <p className="text-gray-500">{t("placeholder")}</p>
             </div>
           ))}
 
@@ -137,10 +141,12 @@ const TopUsers: React.FC = () => {
                   <p className="font-semibold">
                     {topUser.user.firstname} {topUser.user.lastname}
                   </p>
-                  <p>Email: {topUser.user.email}</p>
+                  <p>
+                    {t("email")}: {topUser.user.email}
+                  </p>
                   <p>
                     <FontAwesomeIcon icon={faExchangeAlt} className="mr-2" />
-                    Total Transactions: {topUser.total}
+                    {t("totalTransactions")}: {topUser.total}
                   </p>
                 </div>
               </div>
@@ -151,7 +157,7 @@ const TopUsers: React.FC = () => {
               key={`placeholder-bottom-${index}`}
               className="flex items-center border-2 border-dashed p-2 rounded shadow-md col-span-2 justify-center"
             >
-              <p className="text-gray-500">Placeholder</p>
+              <p className="text-gray-500">{t("placeholder")}</p>
             </div>
           ))}
         </div>
@@ -161,4 +167,3 @@ const TopUsers: React.FC = () => {
 };
 
 export default TopUsers;
-

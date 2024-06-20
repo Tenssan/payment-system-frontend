@@ -1,13 +1,12 @@
+"use client";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import ChangeLanguageButton from "@/app/components/misc/ToggleLanguageButton";
+import { I18nextProvider } from "react-i18next";
+import i18n from "../i18n/index";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "Sistema de Pago",
-  description: "Proyecto de sistema de gestión de pagos para proyectos",
-};
 
 export default function RootLayout({
   children,
@@ -15,10 +14,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`bg-white text-black ${inter.className}`}>
-        <div>{children}</div>
-      </body>
-    </html>
+    <I18nextProvider i18n={i18n}>
+      <html lang="en">
+        <body className={`bg-white text-black ${inter.className}`}>
+          <div>
+            <ChangeLanguageButton />
+            {children}
+          </div>
+        </body>
+      </html>
+    </I18nextProvider>
   );
 }

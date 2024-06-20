@@ -22,6 +22,7 @@ import Switch from "@mui/material/Switch";
 import { visuallyHidden } from "@mui/utils";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { useTranslation } from "react-i18next";
 
 interface Subscription {
   subscriptionplanid: number;
@@ -118,46 +119,46 @@ const headCells: readonly HeadCell[] = [
     id: "subscriptionplanid",
     numeric: true,
     disablePadding: false,
-    label: "ID",
+    label: "id",
   },
   {
     id: "projectName",
     numeric: false,
     disablePadding: false,
-    label: "Project Name",
+    label: "projectName",
   },
   {
     id: "periodicity",
     numeric: false,
     disablePadding: false,
-    label: "Periodicity",
+    label: "periodicity",
   },
   {
     id: "remittentEmail",
     numeric: false,
     disablePadding: false,
-    label: "Remittent Email",
+    label: "remittentEmail",
   },
   {
     id: "destinataryEmail",
     numeric: false,
     disablePadding: false,
-    label: "Destinatary Email",
+    label: "destinataryEmail",
   },
   {
     id: "startdate",
     numeric: false,
     disablePadding: false,
-    label: "Start Date",
+    label: "startDate",
   },
-  { id: "amount", numeric: true, disablePadding: false, label: "Amount" },
+  { id: "amount", numeric: true, disablePadding: false, label: "amount" },
   {
     id: "paymentMethodName",
     numeric: false,
     disablePadding: false,
-    label: "Payment Method",
+    label: "paymentMethod",
   },
-  { id: "status", numeric: false, disablePadding: false, label: "Status" },
+  { id: "status", numeric: false, disablePadding: false, label: "status" },
 ];
 
 interface EnhancedTableProps {
@@ -186,6 +187,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
+  const { t } = useTranslation();
 
   return (
     <TableHead>
@@ -211,10 +213,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {t(headCell.label)}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
+                  {order === "desc"
+                    ? t("sortedDescending")
+                    : t("sortedAscending")}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -231,6 +235,7 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
+  const { t } = useTranslation();
 
   return (
     <Toolbar
@@ -253,7 +258,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} {t("selected")}
         </Typography>
       ) : (
         <Typography
@@ -262,17 +267,17 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          Subscriptions
+          {t("subscriptions")}
         </Typography>
       )}
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
+        <Tooltip title={t("delete")}>
           <IconButton>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
+        <Tooltip title={t("filterList")}>
           <IconButton>
             <FilterListIcon />
           </IconButton>
@@ -283,6 +288,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 export default function SubscriptionsTable() {
+  const { t } = useTranslation();
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] =
     React.useState<keyof SimplifiedSubscription>("subscriptionplanid");
@@ -302,9 +308,9 @@ export default function SubscriptionsTable() {
           `${process.env.NEXT_PUBLIC_BACK_URL}/subscription`,
           {
             headers: {
-              "Access-Control-Allow-Origin": "*", // Permitir cualquier origen
-              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Métodos HTTP permitidos
-              "Access-Control-Allow-Headers": "Content-Type, Authorization", // Encabezados permitidos
+              "Access-Control-Allow-Origin": "*", // Allow any origin
+              "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE", // Allowed HTTP methods
+              "Access-Control-Allow-Headers": "Content-Type, Authorization", // Allowed headers
               Authorization: `Bearer ${token}`,
             },
           }
@@ -478,7 +484,7 @@ export default function SubscriptionsTable() {
       </Paper>
       <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
+        label={t("densePadding")}
       />
     </Box>
   );

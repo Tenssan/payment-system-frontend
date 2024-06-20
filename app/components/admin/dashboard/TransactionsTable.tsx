@@ -22,6 +22,7 @@ import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
+import { useTranslation } from "react-i18next";
 
 interface Transaction {
   transactionid: number;
@@ -112,39 +113,39 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-  { id: "transactionid", numeric: true, disablePadding: false, label: "ID" },
+  { id: "transactionid", numeric: true, disablePadding: false, label: "id" },
   {
     id: "description",
     numeric: false,
     disablePadding: false,
-    label: "Description",
+    label: "description",
   },
-  { id: "amount", numeric: true, disablePadding: false, label: "Amount" },
-  { id: "date", numeric: false, disablePadding: false, label: "Date" },
-  { id: "status", numeric: false, disablePadding: false, label: "Status" },
+  { id: "amount", numeric: true, disablePadding: false, label: "amount" },
+  { id: "date", numeric: false, disablePadding: false, label: "date" },
+  { id: "status", numeric: false, disablePadding: false, label: "status" },
   {
     id: "projectName",
     numeric: false,
     disablePadding: false,
-    label: "Project",
+    label: "projectName",
   },
   {
     id: "paymentMethodName",
     numeric: false,
     disablePadding: false,
-    label: "Payment Method",
+    label: "paymentMethodName",
   },
   {
     id: "remittentEmail",
     numeric: false,
     disablePadding: false,
-    label: "Remittent Email",
+    label: "remittentEmail",
   },
   {
     id: "destinataryEmail",
     numeric: false,
     disablePadding: false,
-    label: "Destinatary Email",
+    label: "destinataryEmail",
   },
 ];
 
@@ -174,6 +175,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
+  const { t } = useTranslation();
 
   return (
     <TableHead>
@@ -199,10 +201,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
-              {headCell.label}
+              {t(headCell.label)}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
+                  {order === "desc"
+                    ? t("sortedDescending")
+                    : t("sortedAscending")}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -219,6 +223,7 @@ interface EnhancedTableToolbarProps {
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
+  const { t } = useTranslation();
 
   return (
     <Toolbar
@@ -241,7 +246,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} {t("selected")}
         </Typography>
       ) : (
         <Typography
@@ -250,17 +255,17 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          Transactions
+          {t("transactions")}
         </Typography>
       )}
       {numSelected > 0 ? (
-        <Tooltip title="Delete">
+        <Tooltip title={t("delete")}>
           <IconButton>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
+        <Tooltip title={t("filterList")}>
           <IconButton>
             <FilterListIcon />
           </IconButton>
@@ -271,6 +276,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 
 export default function TransactionsTable() {
+  const { t } = useTranslation();
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] =
     React.useState<keyof SimplifiedTransaction>("transactionid");
@@ -351,6 +357,7 @@ export default function TransactionsTable() {
         selected.slice(selectedIndex + 1)
       );
     }
+
     setSelected(newSelected);
   };
 
@@ -369,7 +376,8 @@ export default function TransactionsTable() {
     setDense(event.target.checked);
   };
 
-  const isSelected = (id: number) => selected.indexOf(id) !== -1;
+  const isSelected = (transactionid: number) =>
+    selected.indexOf(transactionid) !== -1;
 
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - transactions.length) : 0;
@@ -465,7 +473,7 @@ export default function TransactionsTable() {
       </Paper>
       <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
+        label={t("densePadding")}
       />
     </Box>
   );
