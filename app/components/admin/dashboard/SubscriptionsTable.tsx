@@ -23,6 +23,8 @@ import { visuallyHidden } from "@mui/utils";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { useTranslation } from "react-i18next";
+import { SelectedValueContext } from "../context/SelectedValueContext";
+import { useContext } from "react";
 
 interface Subscription {
   subscriptionplanid: number;
@@ -300,12 +302,16 @@ export default function SubscriptionsTable() {
     SimplifiedSubscription[]
   >([]);
   const token = localStorage.getItem("token");
+  const { selectedValue } = useContext(SelectedValueContext);
 
   React.useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
-        const response = await axios.get<Subscription[]>(
-          `${process.env.NEXT_PUBLIC_BACK_URL}/subscription`,
+        const response = await axios.post<Subscription[]>(
+          `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/getSubscriptionsPerProject`,
+          {
+            projectid: selectedValue,
+          },
           {
             headers: {
               "Access-Control-Allow-Origin": "*", // Allow any origin
@@ -333,7 +339,7 @@ export default function SubscriptionsTable() {
     };
 
     fetchSubscriptions();
-  }, [token]);
+  }, [token, selectedValue]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -397,6 +403,15 @@ export default function SubscriptionsTable() {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - subscriptions.length) : 0;
 
+  const visibleRows = React.useMemo(
+    () =>
+      stableSort(subscriptions, getComparator(order, orderBy)).slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      ),
+    [order, orderBy, page, rowsPerPage, subscriptions]
+  );
+
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
@@ -416,9 +431,8 @@ export default function SubscriptionsTable() {
               rowCount={subscriptions.length}
             />
             <TableBody>
-              {stableSort(subscriptions, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
+            {visibleRows.length > 0 ? (
+              visibleRows.map((row, index) => {
                   const isItemSelected = isSelected(row.subscriptionplanid);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -463,7 +477,16 @@ export default function SubscriptionsTable() {
                       <TableCell align="left">{row.status}</TableCell>
                     </TableRow>
                   );
-                })}
+                })
+            ) : (
+              <TableRow>
+                <TableCell align="center" colSpan={9}>
+                  {t("NoTableData")}
+                </TableCell>
+              </TableRow>
+            )
+              }
+
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                   <TableCell colSpan={6} />

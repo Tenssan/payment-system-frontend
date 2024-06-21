@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Line } from "react-chartjs-2";
 import {
@@ -14,6 +14,7 @@ import {
   Legend,
 } from "chart.js";
 import { useTranslation } from "react-i18next";
+import { SelectedValueContext } from "../context/SelectedValueContext";
 
 ChartJS.register(
   CategoryScale,
@@ -32,24 +33,26 @@ interface TransactionVolume {
 
 const MonthlyTransactionsGraph: React.FC = () => {
   const { t } = useTranslation();
-  const [transactionVolume, setTransactionVolume] = useState<
-    TransactionVolume[]
-  >([]);
-  const [token, setToken] = useState<string | null>(null);
+  const [transactionVolume, setTransactionVolume] = useState<TransactionVolume[]>([]);
+  const token = localStorage.getItem("token");
+  const { selectedValue } = useContext(SelectedValueContext);
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (typeof window !== "undefined") {
       setToken(localStorage.getItem("token"));
     }
-  }, []);
+  }, []);*/
 
   useEffect(() => {
     if (!token) return;
 
     const fetchTransactionsVolume = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/getTransactionCountPerDay`,
+          {
+            projectid: selectedValue,
+          },
           {
             headers: {
               "Access-Control-Allow-Origin": "*", // Allow any origin
@@ -71,13 +74,13 @@ const MonthlyTransactionsGraph: React.FC = () => {
       }
     };
 
-    fetchTransactionsVolume();
-  }, [token]);
+    setTimeout(() => {
+      fetchTransactionsVolume();
+    }, 2000);
+  }, [token, selectedValue]);
 
   const daysInMonth = new Date().getDate();
-  const labels = Array.from({ length: daysInMonth }, (_, i) =>
-    (i + 1).toString()
-  );
+  const labels = Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
   const data = labels.map((label) => {
     const volume = transactionVolume.find((v) => v.day.toString() === label);
     return volume ? volume.total : 0;
@@ -96,10 +99,41 @@ const MonthlyTransactionsGraph: React.FC = () => {
     ],
   };
 
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: t("monthlyTransactions"),
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: t("day"),
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: t("transactions"),
+        },
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+        },
+      },
+    },
+  };
+
   return (
     <div className="p-4 bg-white shadow-md rounded-lg">
       <h2 className="text-xl font-bold mb-4">{t("transactionsPerDay")}</h2>
-      <Line data={chartData} />
+      <Line data={chartData} options={options} />
     </div>
   );
 };

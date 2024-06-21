@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faExchangeAlt } from "@fortawesome/free-solid-svg-icons";
 import Tooltip from "@mui/material/Tooltip";
 import { useTranslation } from "react-i18next";
+import { SelectedValueContext } from "../context/SelectedValueContext";
+import { useContext } from "react";
 
 interface User {
   userid: number;
@@ -23,6 +25,7 @@ const TopUsers: React.FC = () => {
   const { t } = useTranslation();
   const [topUsers, setTopUsers] = useState<TopUser[]>([]);
   const [token, setToken] = useState<string | null>(null);
+  const { selectedValue } = useContext(SelectedValueContext);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -35,8 +38,11 @@ const TopUsers: React.FC = () => {
 
     const fetchTopUsers = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/getTopUsers`,
+          {
+            projectid: selectedValue,
+          },
           {
             headers: {
               "Access-Control-Allow-Origin": "*",
@@ -55,23 +61,28 @@ const TopUsers: React.FC = () => {
     // Wait 1 second before fetching data
     setTimeout(() => {
       fetchTopUsers();
-    }, 1000);
-  }, [token]);
+    }, 2000);
+  }, [token, selectedValue]);
 
-  const placeholders = Array.from({ length: 5 - topUsers.length });
+  // Calcular el número de placeholders necesarios
+  const placeholdersCount = 5 - topUsers.length;
 
   return (
     <div className="p-4">
       <div className="p-4 bg-white shadow-md rounded-lg hover:bg-gray-100 transition duration-300">
         <h2 className="text-xl font-bold mb-4">{t("topUsersTitle")}</h2>
         <div className="grid grid-rows-3 grid-cols-2 gap-4">
-          {topUsers.slice(0, 2).map((topUser) => (
+          {topUsers.map((topUser, index) => (
             <Tooltip
               key={topUser.user.userid}
               title={`${topUser.user.firstname} ${topUser.user.lastname}`}
               arrow
             >
-              <div className="flex items-center border p-2 rounded shadow-md">
+              <div
+                className={`flex items-center border p-2 rounded shadow-md ${
+                  index === 4 ? "col-span-2 justify-center" : ""
+                }`}
+              >
                 <FontAwesomeIcon icon={faUser} className="text-blue-500 mr-2" />
                 <div>
                   <p className="font-semibold">
@@ -88,76 +99,15 @@ const TopUsers: React.FC = () => {
               </div>
             </Tooltip>
           ))}
-          {placeholders.slice(0, 2).map((_, index) => (
+          {Array.from({ length: placeholdersCount }).map((_, index) => (
             <div
-              key={`placeholder-top-${index}`}
-              className="flex items-center border-2 border-dashed p-2 rounded shadow-md justify-center"
+              key={`placeholder-${index}`}
+              className={`flex flex-col items-center border-2 border-dashed p-4 rounded shadow-md text-center justify-center ${
+                topUsers.length + index === 4 ? "col-span-2" : ""
+              }`}
             >
-              <p className="text-gray-500">{t("placeholder")}</p>
-            </div>
-          ))}
-
-          {topUsers.slice(2, 4).map((topUser) => (
-            <Tooltip
-              key={topUser.user.userid}
-              title={`${topUser.user.firstname} ${topUser.user.lastname}`}
-              arrow
-            >
-              <div className="flex items-center border p-2 rounded shadow-md">
-                <FontAwesomeIcon icon={faUser} className="text-blue-500 mr-2" />
-                <div>
-                  <p className="font-semibold">
-                    {topUser.user.firstname} {topUser.user.lastname}
-                  </p>
-                  <p>
-                    {t("email")}: {topUser.user.email}
-                  </p>
-                  <p>
-                    <FontAwesomeIcon icon={faExchangeAlt} className="mr-2" />
-                    {t("totalTransactions")}: {topUser.total}
-                  </p>
-                </div>
-              </div>
-            </Tooltip>
-          ))}
-          {placeholders.slice(2, 4).map((_, index) => (
-            <div
-              key={`placeholder-middle-${index}`}
-              className="flex items-center border-2 border-dashed p-2 rounded shadow-md justify-center"
-            >
-              <p className="text-gray-500">{t("placeholder")}</p>
-            </div>
-          ))}
-
-          {topUsers.slice(4, 5).map((topUser) => (
-            <Tooltip
-              key={topUser.user.userid}
-              title={`${topUser.user.firstname} ${topUser.user.lastname}`}
-              arrow
-            >
-              <div className="flex items-center border p-2 rounded shadow-md col-span-2 justify-center">
-                <FontAwesomeIcon icon={faUser} className="text-blue-500 mr-2" />
-                <div>
-                  <p className="font-semibold">
-                    {topUser.user.firstname} {topUser.user.lastname}
-                  </p>
-                  <p>
-                    {t("email")}: {topUser.user.email}
-                  </p>
-                  <p>
-                    <FontAwesomeIcon icon={faExchangeAlt} className="mr-2" />
-                    {t("totalTransactions")}: {topUser.total}
-                  </p>
-                </div>
-              </div>
-            </Tooltip>
-          ))}
-          {placeholders.slice(4, 5).map((_, index) => (
-            <div
-              key={`placeholder-bottom-${index}`}
-              className="flex items-center border-2 border-dashed p-2 rounded shadow-md col-span-2 justify-center"
-            >
-              <p className="text-gray-500">{t("placeholder")}</p>
+              <FontAwesomeIcon icon={faUser} className="text-gray-300 mb-2" size="3x" />
+              {/*<p className="text-gray-500">{t("placeholder")}</p>*/}
             </div>
           ))}
         </div>
@@ -167,3 +117,5 @@ const TopUsers: React.FC = () => {
 };
 
 export default TopUsers;
+
+

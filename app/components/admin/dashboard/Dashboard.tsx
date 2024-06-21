@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -22,6 +22,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import { visuallyHidden } from "@mui/utils";
 import { useTranslation } from "react-i18next";
+import { SelectedValueContext } from "../context/SelectedValueContext";
 
 interface Transaction {
   transactionid: number;
@@ -37,6 +38,7 @@ interface HeadCell {
   label: string;
   numeric: boolean;
 }
+
 
 const headCells: readonly HeadCell[] = [
   {
@@ -220,7 +222,8 @@ const Dashboard: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [dense, setDense] = useState(false);
   const { t } = useTranslation();
-
+  const { selectedValue } = useContext(SelectedValueContext);
+  
   useEffect(() => {
     if (typeof window !== "undefined") {
       setToken(localStorage.getItem("token"));
@@ -229,12 +232,15 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (!token) return;
-
+    
     // Fetch recent payments
     const fetchRecentPayments = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/getRecentPayments`,
+          {
+            projectid: selectedValue,
+          },
           {
             headers: {
               "Access-Control-Allow-Origin": "*",
@@ -251,7 +257,7 @@ const Dashboard: React.FC = () => {
     };
 
     // Fetch top project
-    const fetchTopProject = async () => {
+    /*const fetchTopProject = async () => {
       try {
         const response = await axios.get(
           `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/getTopProjectAmount`,
@@ -283,13 +289,18 @@ const Dashboard: React.FC = () => {
       } catch (error) {
         console.error("Error fetching top project or its details:", error);
       }
-    };
+    };*/
+
 
     // Fetch monthly total
     const fetchTotalMonthValue = async () => {
+      
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/getTotalAmount`,
+          {
+            projectid: selectedValue,
+          },
           {
             headers: {
               "Access-Control-Allow-Origin": "*",
@@ -306,9 +317,15 @@ const Dashboard: React.FC = () => {
     };
 
     fetchRecentPayments();
-    fetchTopProject();
-    fetchTotalMonthValue();
-  }, [token]);
+
+    /*setTimeout(() => {
+      fetchTopProject();
+    }, 1000);*/
+
+    setTimeout(() => {
+      fetchTotalMonthValue();
+    }, 1000);
+  }, [token, selectedValue]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -369,14 +386,14 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="p-4">
-      <div className="flex justify-between mb-8">
-        <div className="w-1/2 p-4 bg-white shadow-md rounded-lg mr-4">
-          <h2 className="text-xl font-bold mb-2">{t("totalMonthValue")}</h2>
+      <div className="flex justify-center mb-8 ">
+        <div className="w-1/2 p-4 bg-white shadow-md rounded-lg mr-4 justify-center text-center">
+          <h2 className="text-xl font-bold mb-2r">{t("totalMonthValue")}</h2>
           <p className="text-2xl">
-            {totalMonthValue !== null ? totalMonthValue : "Loading..."}
+            {totalMonthValue !== null ? (totalMonthValue.toString() === "" ? 0 : totalMonthValue ) : "Loading..."}
           </p>
         </div>
-        <div className="w-1/2 p-4 bg-white shadow-md rounded-lg ml-4">
+        {/*<div className="w-1/2 p-4 bg-white shadow-md rounded-lg ml-4">
           <h2 className="text-xl font-bold mb-2">{t("topGrossingProject")}</h2>
           {topProject && projectDetails ? (
             <div>
@@ -387,7 +404,7 @@ const Dashboard: React.FC = () => {
           ) : (
             <p>Loading...</p>
           )}
-        </div>
+        </div>*/}
       </div>
       <div className="bg-white shadow-md rounded-lg p-4">
         <Box sx={{ width: "100%" }}>
@@ -408,47 +425,53 @@ const Dashboard: React.FC = () => {
                   rowCount={recentPayments.length}
                 />
                 <TableBody>
-                  {visibleRows.map((row, index) => {
-                    const isItemSelected = isSelected(row.transactionid);
-                    const labelId = `enhanced-table-checkbox-${index}`;
+                  {visibleRows.length > 0 ? (
+                    visibleRows.map((row, index) => {
+                      const isItemSelected = isSelected(row.transactionid);
+                      const labelId = `enhanced-table-checkbox-${index}`;
 
-                    return (
-                      <TableRow
-                        hover
-                        onClick={(event) =>
-                          handleClick(event, row.transactionid)
-                        }
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={row.transactionid}
-                        selected={isItemSelected}
-                        sx={{ cursor: "pointer" }}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{ "aria-labelledby": labelId }}
-                          />
-                        </TableCell>
-                        <TableCell
-                          component="th"
-                          id={labelId}
-                          scope="row"
-                          padding="none"
+                      return (
+                        <TableRow
+                          hover
+                          onClick={(event) => handleClick(event, row.transactionid)}
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          key={row.transactionid}
+                          selected={isItemSelected}
+                          sx={{ cursor: "pointer" }}
                         >
-                          {row.transactionid}
-                        </TableCell>
-                        <TableCell align="left">{row.description}</TableCell>
-                        <TableCell align="right">{row.amount}</TableCell>
-                        <TableCell align="left">
-                          {new Date(row.date).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell align="left">{row.status}</TableCell>
-                      </TableRow>
-                    );
-                  })}
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{ "aria-labelledby": labelId }}
+                            />
+                          </TableCell>
+                          <TableCell
+                            component="th"
+                            id={labelId}
+                            scope="row"
+                            padding="none"
+                          >
+                            {row.transactionid}
+                          </TableCell>
+                          <TableCell align="left">{row.description}</TableCell>
+                          <TableCell align="right">{row.amount}</TableCell>
+                          <TableCell align="left">
+                            {new Date(row.date).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell align="left">{row.status}</TableCell>
+                        </TableRow>
+                      );
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center">
+                        {t("NoTableData")}
+                      </TableCell>
+                    </TableRow>
+                  )}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                       <TableCell colSpan={6} />

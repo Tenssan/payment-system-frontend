@@ -23,6 +23,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { useTranslation } from "react-i18next";
+import { SelectedValueContext } from "../context/SelectedValueContext";
+import { useContext } from "react";
 
 interface UserData {
   userid: number;
@@ -226,12 +228,16 @@ export default function UsersTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [users, setUsers] = React.useState<UserData[]>([]);
   const token = localStorage.getItem("token");
+  const { selectedValue } = useContext(SelectedValueContext);
 
   React.useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/getAllUsers`,
+          {
+            projectid: selectedValue,
+          },
           {
             headers: {
               "Access-Control-Allow-Origin": "*", // Allow any origin
@@ -248,7 +254,7 @@ export default function UsersTable() {
     };
 
     fetchUsers();
-  }, [token]);
+  }, [token, selectedValue]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -335,7 +341,8 @@ export default function UsersTable() {
               rowCount={users.length}
             />
             <TableBody>
-              {visibleRows.map((row, index) => {
+              {visibleRows.length > 0 ? (
+                visibleRows.map((row, index) => {
                 const isItemSelected = isSelected(row.userid);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -371,7 +378,15 @@ export default function UsersTable() {
                     <TableCell align="left">{row.lastname}</TableCell>
                   </TableRow>
                 );
-              })}
+              })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} align="center">
+                    {t("NoTableData")}
+                  </TableCell>
+                </TableRow>
+              )
+            }
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                   <TableCell colSpan={7} />

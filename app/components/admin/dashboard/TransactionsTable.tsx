@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -23,6 +23,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { useTranslation } from "react-i18next";
+import { SelectedValueContext } from "../context/SelectedValueContext";
 
 interface Transaction {
   transactionid: number;
@@ -288,12 +289,16 @@ export default function TransactionsTable() {
     SimplifiedTransaction[]
   >([]);
   const token = localStorage.getItem("token");
-
+  const { selectedValue } = useContext(SelectedValueContext);
+  
   React.useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        const response = await axios.get<Transaction[]>(
-          `${process.env.NEXT_PUBLIC_BACK_URL}/transactions`,
+        const response = await axios.post<Transaction[]>(
+          `${process.env.NEXT_PUBLIC_BACK_URL}/dashboard/transactionsperproject`,
+          {
+            projectid: selectedValue,
+          },
           {
             headers: {
               "Access-Control-Allow-Origin": "*", // Allow any origin
@@ -321,7 +326,7 @@ export default function TransactionsTable() {
     };
 
     fetchTransactions();
-  }, [token]);
+  }, [token, selectedValue]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -410,10 +415,11 @@ export default function TransactionsTable() {
               rowCount={transactions.length}
             />
             <TableBody>
-              {visibleRows.map((row, index) => {
+            {visibleRows.length > 0 ? (
+              visibleRows.map((row, index) => {
                 const isItemSelected = isSelected(row.transactionid);
                 const labelId = `enhanced-table-checkbox-${index}`;
-
+              
                 return (
                   <TableRow
                     hover
@@ -452,7 +458,14 @@ export default function TransactionsTable() {
                     <TableCell align="left">{row.destinataryEmail}</TableCell>
                   </TableRow>
                 );
-              })}
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={10} align="center">
+                  {t("NoTableData")}
+                </TableCell>
+              </TableRow>
+            )}
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                   <TableCell colSpan={10} />
@@ -477,4 +490,4 @@ export default function TransactionsTable() {
       />
     </Box>
   );
-}
+};

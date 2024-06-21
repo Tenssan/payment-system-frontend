@@ -30,7 +30,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <nav
-      className="fixed left-0 top-0 h-full w-16 md:w-64 text-white flex flex-col justify-between bg-center bg-opacity-30"
+      className="fixed left-0 top-0 h-full z-50 w-16 md:w-64 text-white flex flex-col justify-between bg-center bg-opacity-30"
       style={{ backgroundImage: `url(${bgImage.src})` }}
     >
       <div className="flex flex-col items-center p-4">

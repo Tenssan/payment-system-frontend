@@ -49,6 +49,9 @@ i18n.use(initReactI18next).init({
         Email: "Email",
         RUT: "RUT",
         LastName: "Last Name",
+        NoTableData: "No data in table",
+        day: "Day",
+        monthlyTransactions: "Monthly Transactions",
       },
     },
     es: {
@@ -98,6 +101,10 @@ i18n.use(initReactI18next).init({
         Email: "Correo Electrónico",
         RUT: "RUT",
         LastName: "Apellido",
+        NoTableData: "No hay datos en la tabla",
+        day: "Día",
+        monthlyTransactions: "Transacciones Mensuales",
+
       },
     },
   },
